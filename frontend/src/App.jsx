@@ -14,6 +14,7 @@ import AdminJobs from "./pages/admin/Jobs";
 import AdminCompanies from "./pages/admin/Companies";
 import UploadHistory from "./pages/admin/UploadHistory";
 import ProcessedView from "./pages/admin/ProcessedView";
+import Schools from "./pages/admin/Schools";
 
 const PrivateRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/admin/upload" element={<PrivateRoute adminOnly><AdminUpload /></PrivateRoute>} />
           <Route path="/admin/uploads/history" element={<PrivateRoute adminOnly><UploadHistory /></PrivateRoute>} />
           <Route path="/admin/uploads/:uploadId/processed" element={<PrivateRoute adminOnly><ProcessedView /></PrivateRoute>} />
+          <Route path="/admin/schools" element={<PrivateRoute adminOnly><Schools /></PrivateRoute>} />
           <Route path="/admin/jobs" element={<PrivateRoute adminOnly><AdminJobs /></PrivateRoute>} />
           <Route path="/admin/companies" element={<PrivateRoute adminOnly><AdminCompanies /></PrivateRoute>} />
 

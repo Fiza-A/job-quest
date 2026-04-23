@@ -28,9 +28,10 @@ const AdminCompanies = () => {
     }
   };
 
-  const filteredCompanies = companies.filter((c) =>
-    c.company_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCompanies = companies.filter((c) => {
+    const name = c.name || c.company_name || "";
+    return name.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -102,7 +103,7 @@ const AdminCompanies = () => {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-2xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
-                      {company.company_name}
+                      {company.name || company.company_name || "Unknown Company"}
                     </h3>
                     {company.industry && (
                       <div className="flex items-center text-gray-400 mt-1 font-bold text-xs uppercase tracking-wider">

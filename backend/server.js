@@ -4,9 +4,10 @@ const cors = require("cors");
 const path = require("path"); 
 const { runMigrations } = require("./db/migrations"); 
 const { SCHOOLS } = require("./constants");
-const authRoutes = require("./routes/auth"); 
-const adminRoutes = require("./routes/admin"); 
-const studentRoutes = require("./routes/student"); 
+const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
+const studentRoutes = require("./routes/student");
+const schoolsRoutes = require("./routes/schools"); 
  
 const app = express(); 
 const PORT = process.env.PORT || 5000; 
@@ -24,16 +25,14 @@ try {
   process.exit(1); 
 } 
  
-// Routes 
-app.use("/api/auth", authRoutes); 
-app.use("/api/admin", adminRoutes); 
-app.use("/api/student", studentRoutes); 
- 
-// Health Check 
-app.get("/health", (req, res) => res.json({ status: "ok" })); 
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/schools", schoolsRoutes);
 
-// Schools List
-app.get("/api/schools", (req, res) => res.json({ data: SCHOOLS }));
+// Health Check
+app.get("/health", (req, res) => res.json({ status: "ok" }));
  
 app.listen(PORT, () => { 
   console.log(`🚀 Server running on http://localhost:${PORT}`); 

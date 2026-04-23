@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogOut, LayoutDashboard, Briefcase, Building, Upload, User, Shield, ChevronRight, Settings, History } from "lucide-react";
+import { LogOut, LayoutDashboard, Briefcase, Building, Upload, User, Shield, ChevronRight, Settings, History, GraduationCap } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "./ui/Button";
 import { DropdownMenuRoot, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "./ui/DropdownMenu";
@@ -21,6 +21,7 @@ const Layout = ({ children }) => {
     { label: "Dashboard", path: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "Upload Jobs", path: "/admin/upload", icon: <Upload className="w-5 h-5" /> },
     { label: "Upload History", path: "/admin/uploads/history", icon: <History className="w-5 h-5" /> },
+    { label: "Schools & Programs", path: "/admin/schools", icon: <GraduationCap className="w-5 h-5" /> },
     { label: "Manage Jobs", path: "/admin/jobs", icon: <Briefcase className="w-5 h-5" /> },
     { label: "Companies", path: "/admin/companies", icon: <Building className="w-5 h-5" /> },
   ];

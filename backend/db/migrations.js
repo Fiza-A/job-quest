@@ -100,6 +100,18 @@ function runMigrations() {
       metadata TEXT, 
       created_at TEXT DEFAULT (datetime('now')) 
     ); 
+ 
+    CREATE TABLE IF NOT EXISTS schools ( 
+      school_code TEXT PRIMARY KEY, 
+      full_name TEXT NOT NULL 
+    ); 
+ 
+    CREATE TABLE IF NOT EXISTS programs ( 
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      school_code TEXT NOT NULL REFERENCES schools(school_code) ON DELETE CASCADE, 
+      program_name TEXT NOT NULL, 
+      description TEXT NOT NULL DEFAULT '' 
+    ); 
   `); 
  
   console.log("✅ Database migrations complete"); 
