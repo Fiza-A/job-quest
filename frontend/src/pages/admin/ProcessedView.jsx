@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "@/lib/api"; 
 import { Button } from "@/components/ui/Button"; 
 import { Badge } from "@/components/ui/Badge"; 
-import { useToast } from "@chakra-ui/react"; 
 import { 
   ArrowLeft, 
   FileDown, 
@@ -91,7 +90,6 @@ function SummaryBar({ jobs }) {
 export default function ProcessedView() { 
   const { uploadId } = useParams(); 
   const navigate = useNavigate(); 
-  const toast = useToast(); 
   const [jobs, setJobs] = useState([]); 
   const [meta, setMeta] = useState(null); 
   const [loading, setLoading] = useState(true);
@@ -106,16 +104,11 @@ export default function ProcessedView() {
         });
       })
       .catch((err) => {
-        toast({
-          title: "Failed to load processed data",
-          description: err.response?.data?.error || err.message,
-          status: "error",
-          duration: 3000
-        });
+        alert("Failed to load processed data: " + (err.response?.data?.error || err.message));
         navigate("/admin/uploads/history");
       })
       .finally(() => setLoading(false));
-  }, [uploadId, navigate, toast]);
+  }, [uploadId, navigate]);
 
   function handleDownloadProcessed(format) { 
     const token = localStorage.getItem("token"); 
@@ -139,7 +132,7 @@ export default function ProcessedView() {
         window.URL.revokeObjectURL(url); 
       }) 
       .catch(() => 
-        toast({ title: "Processed file not available", status: "error", duration: 3000 }) 
+        alert("Processed file not available") 
       ); 
   }
 

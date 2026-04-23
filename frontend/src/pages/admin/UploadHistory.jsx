@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "@/lib/api"; 
 import { Badge } from "@/components/ui/badge"; 
 import { Button } from "@/components/ui/button"; 
-import { useToast } from "@chakra-ui/react"; 
 import { 
   FileSpreadsheet, 
   Download, 
@@ -33,7 +32,6 @@ export default function UploadHistory() {
   const [uploads, setUploads] = useState([]); 
   const [loading, setLoading] = useState(true); 
   const navigate = useNavigate(); 
-  const toast = useToast(); 
 
   useEffect(() => { 
     api.get("/admin/uploads") 
@@ -60,7 +58,7 @@ export default function UploadHistory() {
         window.URL.revokeObjectURL(url); 
       }) 
       .catch(() => 
-        toast({ title: "Raw file not available", status: "error", duration: 3000 }) 
+        alert("Raw file not available") 
       ); 
   } 
 
@@ -86,7 +84,7 @@ export default function UploadHistory() {
         window.URL.revokeObjectURL(url); 
       }) 
       .catch(() => 
-        toast({ title: "Processed file not available", status: "error", duration: 3000 }) 
+        alert("Processed file not available") 
       ); 
   } 
 
