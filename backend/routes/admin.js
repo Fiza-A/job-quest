@@ -7,7 +7,7 @@ const { randomUUID } = require("crypto");
 const { getDb } = require("../db/database"); 
 const authMiddleware = require("../middleware/auth"); 
 const adminOnly = require("../middleware/adminOnly"); 
-const { parseExcelFile } = require("../services/excelParser"); 
+const { parseJobsExcel } = require("../services/excelParser"); 
 const { analyzeJob } = require("../services/aiService"); 
 
 // Ensure processed folder exists 
@@ -45,7 +45,7 @@ router.post("/uploads", upload.single("file"), (req, res) => {
  
   let rows; 
   try { 
-    rows = parseExcelFile(req.file.path); 
+    rows = parseJobsExcel(req.file.path); 
   } catch (err) { 
     return res.status(400).json({ error: "Failed to parse Excel: " + err.message }); 
   } 
@@ -121,7 +121,7 @@ router.post("/uploads/:uploadId/confirm", (req, res) => {
     const saveAll = db.transaction(() => { 
       for (const row of preview.rows) { 
         try { 
-          const companyName = (row.company || "Unknown Company").trim();
+          const companyName = (row.company_name || "Unknown Company").trim();
           const compId = randomUUID(); 
           
           // 1. Insert/Update Company
@@ -141,16 +141,16 @@ router.post("/uploads/:uploadId/confirm", (req, res) => {
           const jobId = randomUUID(); 
           insertJob.run( 
             jobId, company.id, uploadId, 
-            row.job_title, row.location, row.meta_location, 
+            row.job_title, row.meta_location, row.meta_location, 
             row.work_mode, row.employment_type, 
             row.posted_time, row.applicant_count, 
-            row.is_promoted ? 1 : 0, row.is_easy_apply ? 1 : 0, 
+            row.is_promoted ? 1 : 0, row.apply_type === 'Easy Apply' ? 1 : 0, 
             row.response_status, row.apply_type, 
-            row.apply_link, row.job_url, row.description 
+            row.apply_link, row.job_link, row.full_description 
           ); 
           successCount++; 
         } catch (err) { 
-          console.error(`[SAVE] Row ${row.row_index} error:`, err.message); 
+          console.error(`[SAVE] Row ${row.row_number} error:`, err.message); 
           failCount++; 
         } 
       } 
@@ -246,21 +246,21 @@ router.get("/uploads/:uploadId/download-processed", (req, res) => {
   // Build clean export rows — drop internal fields 
   const exportRows = rows.map(r => ({ 
     "Job Title":         r.job_title, 
-    "Company":           r.company, 
-    "Location":          r.location, 
+    "Company":           r.company_name, 
+    "Location":          r.meta_location, 
     "Work Mode":         r.work_mode, 
     "Employment Type":   r.employment_type, 
     "Posted":            r.posted_time, 
     "Applicants":        r.applicant_count, 
     "Promoted":          r.is_promoted ? "Yes" : "No", 
-    "Easy Apply":        r.is_easy_apply ? "Yes" : "No", 
+    "Easy Apply":        r.apply_type === 'Easy Apply' ? "Yes" : "No", 
     "Apply Link":        r.apply_link, 
     "Apply Type":        r.apply_type, 
     "Response Status":   r.response_status, 
     "Company Industry":  r.company_industry, 
     "Company Size":      r.company_size, 
     "Meta Location":     r.meta_location, 
-    "Job URL":           r.job_url, 
+    "Job URL":           r.job_link, 
   })); 
 
   const ws = XLSX.utils.json_to_sheet(exportRows); 

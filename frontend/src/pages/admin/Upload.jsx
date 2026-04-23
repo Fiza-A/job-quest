@@ -48,7 +48,7 @@ function SummaryBar({ jobs }) {
   jobs.forEach(j => { 
     workModes[j.work_mode] = (workModes[j.work_mode] || 0) + 1; 
     empTypes[j.employment_type] = (empTypes[j.employment_type] || 0) + 1; 
-    if (j.is_easy_apply) easyApply++; else externalApply++; 
+    if (j.apply_type === 'Easy Apply') easyApply++; else externalApply++; 
     if (j.is_promoted) promoted++; 
   }); 
  
@@ -133,7 +133,8 @@ export default function Upload() {
     try {
       const res = await api.post(`/admin/uploads/${uploadData.uploadId}/confirm`);
       setResults(res.data);
-      setStage(3);
+      // Directly go to the processed data table after saving
+      navigate(`/admin/uploads/${uploadData.uploadId}/processed`);
     } catch (err) {
       console.error("Confirmation Error:", err);
       const errorMsg = err.response?.data?.error || err.message || "Confirmation failed";
@@ -268,26 +269,26 @@ export default function Upload() {
                   <TableHead className="min-w-[180px] font-black text-gray-900">Location</TableHead>
                   <TableHead className="min-w-[130px] font-black text-gray-900">Posted</TableHead>
                   <TableHead className="min-w-[100px] font-black text-gray-900 text-center">Applicants</TableHead>
+                  <TableHead className="w-24 font-black text-gray-900 text-center">Apply Type</TableHead>
                   <TableHead className="w-24 font-black text-gray-900 text-center">Promoted</TableHead>
-                  <TableHead className="w-24 font-black text-gray-900 text-center">Easy Apply</TableHead>
-                  <TableHead className="min-w-[200px] font-black text-gray-900">Response Status</TableHead>
                   <TableHead className="min-w-[180px] font-black text-gray-900">Industry</TableHead>
                   <TableHead className="min-w-[130px] font-black text-gray-900">Size</TableHead>
+                  <TableHead className="min-w-[200px] font-black text-gray-900">Description</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {uploadData.preview.map((job, idx) => (
                   <TableRow key={idx} className="group hover:bg-indigo-50/30 transition-colors">
-                    <TableCell className="text-center font-mono text-xs text-gray-400">{idx + 1}</TableCell>
+                    <TableCell className="text-center font-mono text-xs text-gray-400">{job.row_number || idx + 1}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-900 leading-tight">{job.job_title}</span>
-                        <a href={job.job_url} target="_blank" rel="noreferrer" className="text-[10px] text-indigo-500 hover:underline flex items-center mt-1">
+                        <a href={job.job_link} target="_blank" rel="noreferrer" className="text-[10px] text-indigo-500 hover:underline flex items-center mt-1">
                           View Link <ExternalLink size={10} className="ml-1" />
                         </a>
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-gray-700">{job.company}</TableCell>
+                    <TableCell className="font-bold text-gray-700">{job.company_name}</TableCell>
                     <TableCell>
                       <Badge className={workModeBadge[job.work_mode] || "bg-gray-100 text-gray-700"}>
                         {job.work_mode || "N/A"}
@@ -298,7 +299,7 @@ export default function Upload() {
                         {job.employment_type || "N/A"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm font-medium text-gray-600">{job.location}</TableCell>
+                    <TableCell className="text-sm font-medium text-gray-600">{job.meta_location}</TableCell>
                     <TableCell className="text-sm font-bold text-indigo-600">{job.posted_time}</TableCell>
                     <TableCell className="text-center">
                       <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 rounded-full border border-gray-100">
@@ -307,21 +308,20 @@ export default function Upload() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {job.is_promoted ? <CheckCircle size={18} className="text-green-500 mx-auto" /> : <span className="text-gray-300">—</span>}
+                      <Badge variant="outline" className="text-[10px] uppercase font-bold">
+                        {job.apply_type}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      {job.is_easy_apply ? <CheckCircle size={18} className="text-indigo-500 mx-auto" /> : <span className="text-gray-300">—</span>}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2 cursor-help" title={job.response_status || "No data"}>
-                        <span className="text-xs text-gray-600 truncate max-w-[180px]">
-                          {job.response_status || "No data"}
-                        </span>
-                        <Info size={12} className="text-gray-300 flex-shrink-0" />
-                      </div>
+                      {job.is_promoted ? <CheckCircle size={18} className="text-green-500 mx-auto" /> : <span className="text-gray-300">—</span>}
                     </TableCell>
                     <TableCell className="text-sm text-gray-500 italic">{job.company_industry}</TableCell>
                     <TableCell className="text-xs font-bold text-gray-400 uppercase tracking-tighter">{job.company_size}</TableCell>
+                    <TableCell>
+                      <div className="text-xs text-gray-600 max-w-[200px] truncate" title={job.full_description}>
+                        {job.full_description}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
